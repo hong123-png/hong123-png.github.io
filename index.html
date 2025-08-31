@@ -58,6 +58,44 @@
             margin-top: 25px;
             line-height: 1.6;
         }
+        .wechat-tips {
+            display: none;
+            background: #f1f8e9;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .step {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: flex-start;
+        }
+        .step-num {
+            background: #07C160;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #07C160;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -65,7 +103,25 @@
         <div class="logo">珈</div>
         <h1>正在为您跳转【智慧珞珈】小程序</h1>
         
-        <p>如果跳转失败，请点击下方按钮手动打开</p>
+        <div class="loader" id="loader"></div>
+        
+        <p id="statusText">检测环境中，即将为您跳转...</p>
+        
+        <div class="wechat-tips" id="wechatTips">
+            <h3>微信内打开指引：</h3>
+            <div class="step">
+                <div class="step-num">1</div>
+                <div>点击右上角 <strong>"..."</strong> 菜单</div>
+            </div>
+            <div class="step">
+                <div class="step-num">2</div>
+                <div>选择 <strong>"在浏览器打开"</strong></div>
+            </div>
+            <div class="step">
+                <div class="step-num">3</div>
+                <div>在浏览器中点击下方按钮跳转</div>
+            </div>
+        </div>
         
         <button class="btn" id="jumpBtn">一键打开智慧珞珈</button>
         
@@ -79,21 +135,49 @@
         // 目标小程序链接
         const targetLink = "#小程序://智慧珞珈/QMwuKj7rjg6DPnv";
         
-        // 页面加载后立即尝试跳转（在微信环境中可能被阻止，但值得一试）
+        // 检测是否在微信环境中
+        function isWeixinBrowser() {
+            const ua = navigator.userAgent.toLowerCase();
+            return ua.indexOf('micromessenger') !== -1;
+        }
+        
+        // 页面加载后的处理
         window.onload = function() {
-            // 尝试直接跳转
-            window.location.href = targetLink;
+            const loader = document.getElementById('loader');
+            const statusText = document.getElementById('statusText');
+            const wechatTips = document.getElementById('wechatTips');
             
-            // 设置一个计时器，如果2秒后页面还在，说明跳转失败，则显示引导信息
-            setTimeout(() => {
-                document.body.style.display = 'block'; // 确保页面是显示的
-            }, 2000);
+            if (isWeixinBrowser()) {
+                // 在微信环境中，显示特殊提示
+                statusText.textContent = '检测到您在微信内打开，请按以下指引操作';
+                wechatTips.style.display = 'block';
+            } else {
+                // 不在微信环境中，尝试直接跳转
+                statusText.textContent = '正在跳转到智慧珞珈小程序...';
+                
+                // 尝试直接跳转
+                window.location.href = targetLink;
+                
+                // 设置一个计时器，如果2秒后页面还在，说明跳转失败
+                setTimeout(() => {
+                    statusText.textContent = '自动跳转失败，请手动点击下方按钮';
+                    loader.style.display = 'none';
+                }, 2000);
+            }
         };
         
         // 为按钮添加点击事件
         document.getElementById('jumpBtn').addEventListener('click', function() {
-            copyToClipboard(targetLink);
-            alert('✅ 已成功复制链接！\n\n请按以下步骤操作：\n1. 返回微信首页\n2. 在顶部下拉\n3. 粘贴到搜索框并搜索\n4. 即可打开【智慧珞珈】');
+            if (isWeixinBrowser()) {
+                // 在微信环境中，提供更详细的指引
+                alert('✅ 由于微信限制，请按以下步骤操作：\n\n1. 点击右上角"..."\n2. 选择"在浏览器打开"\n3. 返回此页面点击按钮\n\n然后系统会复制链接，请返回微信首页下拉，在搜索框粘贴并前往');
+            } else {
+                copyToClipboard(targetLink);
+                alert('✅ 已成功复制链接！\n\n请按以下步骤操作：\n1. 返回微信首页\n2. 在顶部下拉\n3. 粘贴到搜索框并搜索\n4. 即可打开【智慧珞珈】');
+                
+                // 额外尝试直接跳转
+                window.location.href = targetLink;
+            }
         });
         
         // 复制到剪贴板的函数
