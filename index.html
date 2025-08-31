@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>正在跳转到智慧珞珈小程序</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            text-align: center;
+            padding: 50px 20px;
+            background-color: #f8f8f8;
+            color: #333;
+        }
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background-color: #07C160;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        h1 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #07C160;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin-top: 20px;
+            background: linear-gradient(135deg, #07c160, #09bb07);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(7, 193, 96, 0.3);
+        }
+        .tip {
+            font-size: 14px;
+            color: #999;
+            margin-top: 25px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">珈</div>
+        <h1>正在为您跳转【智慧珞珈】小程序</h1>
+        
+        <p>如果跳转失败，请点击下方按钮手动打开</p>
+        
+        <button class="btn" id="jumpBtn">一键打开智慧珞珈</button>
+        
+        <div class="tip">
+            📍 操作指引：点击上方按钮后，系统会复制链接。<br>
+            请 <strong>返回微信首页下拉</strong>，在顶部搜索框<strong>粘贴并前往</strong>即可打开。
+        </div>
+    </div>
+
+    <script>
+        // 目标小程序链接
+        const targetLink = "#小程序://智慧珞珈/QMwuKj7rjg6DPnv";
+        
+        // 页面加载后立即尝试跳转（在微信环境中可能被阻止，但值得一试）
+        window.onload = function() {
+            // 尝试直接跳转
+            window.location.href = targetLink;
+            
+            // 设置一个计时器，如果2秒后页面还在，说明跳转失败，则显示引导信息
+            setTimeout(() => {
+                document.body.style.display = 'block'; // 确保页面是显示的
+            }, 2000);
+        };
+        
+        // 为按钮添加点击事件
+        document.getElementById('jumpBtn').addEventListener('click', function() {
+            copyToClipboard(targetLink);
+            alert('✅ 已成功复制链接！\n\n请按以下步骤操作：\n1. 返回微信首页\n2. 在顶部下拉\n3. 粘贴到搜索框并搜索\n4. 即可打开【智慧珞珈】');
+        });
+        
+        // 复制到剪贴板的函数
+        function copyToClipboard(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            document.body.appendChild(textArea);
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+            } catch (err) {
+                console.error('复制失败:', err);
+            }
+            
+            document.body.removeChild(textArea);
+        }
+    </script>
+</body>
+</html>
